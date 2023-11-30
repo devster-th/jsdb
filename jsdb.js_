@@ -534,23 +534,3 @@ function randomWords(length=16) {
 }//ok
 
 module.exports = {jsdb}
-
-
-
-/* devnote
-20231130
-1) very first write, then read shows empty but if do second read, shows data
-2) the very first write, not added the _id
-
-
-
-
-
-
-
-
-
-
-
-
-*/
