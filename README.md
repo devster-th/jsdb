@@ -19,8 +19,8 @@ it needs the xfile.js and xcrypto.js
 
 
 # files
-files you need to run:
-    jsdb.js, xfile.js, xcrypto.js
+files you need to run:  
+    `jsdb.js, xfile.js, xcrypto.js` ...can find from http://github.com/devster-th
 
 the db file is:
     jsdb.json //for plain mode
