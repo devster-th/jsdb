@@ -3,3 +3,29 @@ A very simple json database for node.js. Has 2 modes, secure and plain. The secu
 
 # dependencies
 it needs the xfile.js and xcrypto.js
+
+# use
+    //in your main program
+    const {jsdb} = require('./jsdb')
+
+    //find all in db
+    let result = await jdsb.r()
+
+    //find from 'people' collection
+    let result = await jsdb.r('people',{name:'john'})
+
+    //write data
+    jsdb.w('people',{name:'jane', age:19, sex:'female'})
+
+
+# files
+files you need to run:
+    jsdb.js, xfile.js, xcrypto.js
+
+the db file is:
+    jsdb.json //for plain mode
+    jsdb.sec //for secured mode this is base64 encrypted data
+
+
+# license
+none
