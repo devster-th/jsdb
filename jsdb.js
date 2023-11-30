@@ -46,90 +46,94 @@ jsdb.r = function (collec,query) {
 
     let fileToUse = jsdb.secureMode? jsdb.secureFileName : jsdb.defaultFileName
 
-    XF.$({exist: fileToUse}).then(re => jsdb.active = re)
-    let output = ''
-  
-    if (jsdb.active) {
-      //read file then work on it
+    XF.$({exist: fileToUse}).then(re => {
+      jsdb.active = re
+      let output = ''
 
-      jsdbFile('read').then(re => {
-        /*let readd = await XF.$({read:'jsdb.json'})
-        jsdb.x = JSON.parse(readd)*/
-        
-        if (!collec && !query) {
-          //if receive blank read, means read all data in db
-          output = jsdb.x 
-          jsdb.x = {}
-          resolve(output) 
-    
-        } else if (collec && !query) {
-          //receive only collec, read whole specified collec
-          if (collec in jsdb.x) {
-            output = jsdb.x[collec] 
+      if (jsdb.active) {
+        //read file then work on it
+  
+        jsdbFile('read').then(re => {
+          /*let readd = await XF.$({read:'jsdb.json'})
+          jsdb.x = JSON.parse(readd)*/
+          
+          if (!collec && !query) {
+            //if receive blank read, means read all data in db
+            output = jsdb.x 
             jsdb.x = {}
             resolve(output) 
-            
-          } else {
-            jsdb.x = {}
-            reject(null) 
-          }
-    
-        } else if (collec && query) {
-          //receive both collec & query
-          if (collec in jsdb.x) {
-    
-            if (!Object.keys(query).length) {
-              //blank query {} means find all
+      
+          } else if (collec && !query) {
+            //receive only collec, read whole specified collec
+            if (collec in jsdb.x) {
               output = jsdb.x[collec] 
               jsdb.x = {}
               resolve(output) 
-      
+              
             } else {
-              //has someting in the query
-    
-              let key = Object.keys(query)
-              let kk = key[0]
-    
-              if (key.length) {
-                //jsdb will support only 1 field query
-                let queryPattern = new RegExp(query[kk],'i')
-                
-                /*return jsdb.x[collec].filter(doc => doc[key].toString().match(queryPattern) )*/
-    
-                output = []
-                jsdb.x[collec].forEach(dd => {
-                  if (dd[kk]) {
-                    if (dd[kk].toString().match(queryPattern) ) output.push(dd)
-                  }
-                })
-    
-                jsdb.x = {}
-                if (output.length > 1) {
-                  resolve(output) 
-                } else {
-                  resolve(output[0]) //has only 1 doc returns just obj
-                }
-    
-              } else {
-                // query == {} means no query, just take all of this collec
-                output = jsdb.x[collec]
-                jsdb.x = {} 
-                resolve(output)
-              }
+              jsdb.x = {}
+              reject(null) 
             }
-          
-          } else {
-            jsdb.x = {}
-            reject(null)
+      
+          } else if (collec && query) {
+            //receive both collec & query
+            if (collec in jsdb.x) {
+      
+              if (!Object.keys(query).length) {
+                //blank query {} means find all
+                output = jsdb.x[collec] 
+                jsdb.x = {}
+                resolve(output) 
+        
+              } else {
+                //has someting in the query
+      
+                let key = Object.keys(query)
+                let kk = key[0]
+      
+                if (key.length) {
+                  //jsdb will support only 1 field query
+                  let queryPattern = new RegExp(query[kk],'i')
+                  
+                  /*return jsdb.x[collec].filter(doc => doc[key].toString().match(queryPattern) )*/
+      
+                  output = []
+                  jsdb.x[collec].forEach(dd => {
+                    if (dd[kk]) {
+                      if (dd[kk].toString().match(queryPattern) ) output.push(dd)
+                    }
+                  })
+      
+                  jsdb.x = {}
+                  if (output.length > 1) {
+                    resolve(output) 
+                  } else {
+                    resolve(output[0]) //has only 1 doc returns just obj
+                  }
+      
+                } else {
+                  // query == {} means no query, just take all of this collec
+                  output = jsdb.x[collec]
+                  jsdb.x = {} 
+                  resolve(output)
+                }
+              }
+            
+            } else {
+              jsdb.x = {}
+              reject(null)
+            }
           }
-        }
-
-      })//jsdbFile
-
-    } else {
-      //inactive
-      reject(null)
-    }
+  
+        })//jsdbFile
+  
+      } else {
+        //inactive
+        reject(null)
+      }
+    })
+  
+    
 
   })//promise
 }//END of jsdb.r
@@ -159,130 +163,138 @@ jsdb.w = function (collec, docq, update) {
 
     let fileToUse = jsdb.secureMode? jsdb.secureFileName : jsdb.defaultFileName
   
-    XF.$({exist: fileToUse}).then(re => jsdb.active = re)
+    XF.$({exist: fileToUse}).then(re => {
+      jsdb.active = re
 
-    if (jsdb.active) { //now can work further
+      if (jsdb.active) { //now can work further
 
-      jsdbFile('read').then(re => {
-        //after read, data will be at jsdb.x
-
-        //WRITE-ADD
-        if (collec && docq && !update) {
-          //this is write mode for new adding data
-    
-            // write-add block
-          if (collec in jsdb.x) {
-            //if docq is empty {} just exit
-            if (!Object.keys(docq).length) {
-              jsdb.x = {}
-              reject(false) 
-            }
-            
-            //collec already existed, just push
-            if (Array.isArray(docq)) {
-              //if array means it's multi-doc
-              docq.forEach(d => {
-                d._id = randomWords()
-                d._time = Date.now()
-                jsdb.x[collec].push(d)
-              })
+        jsdbFile('read').then(re => {
+          //after read, data will be at jsdb.x
+  
+          //WRITE-ADD
+          if (collec && docq && !update) {
+            //this is write mode for new adding data
+      
+              // write-add block
+            if (collec in jsdb.x) {
+              //if docq is empty {} just exit
+              if (!Object.keys(docq).length) {
+                jsdb.x = {}
+                reject(false) 
+              }
+              
+              //collec already existed, just push
+              if (Array.isArray(docq)) {
+                //if array means it's multi-doc
+                docq.forEach(d => {
+                  d._id = randomWords()
+                  d._time = Date.now()
+                  jsdb.x[collec].push(d)
+                })
+              } else {
+                //only 1 doc
+                docq._id = randomWords()
+                docq._time = Date.now()
+                jsdb.x[collec].push(docq)
+              }
+              jsdbFile('write')
+      
+      
             } else {
-              //only 1 doc
-              docq._id = randomWords()
-              docq._time = Date.now()
-              jsdb.x[collec].push(docq)
+              //not exist, add it as new collec
+              if (Array.isArray(docq)) {
+                docq.forEach(x => {
+                  x._id = randomWords()
+                  x._time = Date.now()
+                })
+                jsdb.x[collec] = docq //the doc is already array
+              } else {
+                docq._id = randomWords()
+                docq._time = Date.now()
+                jsdb.x[collec] = [docq]
+              }
+              jsdbFile('write')
             }
-            jsdbFile('write')
-    
-    
-          } else {
-            //not exist, add it as new collec
-            if (Array.isArray(docq)) {
-              docq.forEach(x => {
-                x._id = randomWords()
-                x._time = Date.now()
-              })
-              jsdb.x[collec] = docq //the doc is already array
-            } else {
-              docq._id = randomWords()
-              docq._time = Date.now()
-              jsdb.x[collec] = [docq]
-            }
-            jsdbFile('write')
-          }
-    
-    
-        //WRITE-UPDATE
-        } else if (collec && docq && update) {
-          //this is write for updatng the old doc
-          //this case the docq will be the query input 
-          if (collec in jsdb.x) {
-            //collection exists, good to go
-    
-            let qKey = Object.keys(docq)
-            if (qKey.length) {
-              //valid query
-              let qk1 = qKey[0]
-              let querPatt = new RegExp(docq[qk1],'i')
-              //find & update
-              jsdb.x[collec].forEach(dd => {
-                if (dd[qk1]) {
-                  if (dd[qk1].match(querPatt) ) {
-                    //found then just update it
-                    for (kk in update) {
-                      dd[kk] = update[kk]
+      
+      
+          //WRITE-UPDATE
+          } else if (collec && docq && update) {
+            //this is write for updatng the old doc
+            //this case the docq will be the query input 
+            if (collec in jsdb.x) {
+              //collection exists, good to go
+      
+              let qKey = Object.keys(docq)
+              if (qKey.length) {
+                //valid query
+                let qk1 = qKey[0]
+                let querPatt = new RegExp(docq[qk1],'i')
+                //find & update
+                jsdb.x[collec].forEach(dd => {
+                  if (dd[qk1]) {
+                    if (dd[qk1].match(querPatt) ) {
+                      //found then just update it
+                      for (kk in update) {
+                        dd[kk] = update[kk]
+                      }
                     }
+                    dd._time = Date.now()
+                  }
+                })
+                jsdbFile('write')
+      
+              } else {
+                //just a blank query {}, makes it as 'all'
+                jsdb.x[collec].forEach(dd => {
+                  for (kk in update) {
+                    dd[kk] = update[kk]
                   }
                   dd._time = Date.now()
-                }
-              })
-              jsdbFile('write')
-    
+                })
+                jsdbFile('write')
+              }
+      
             } else {
-              //just a blank query {}, makes it as 'all'
-              jsdb.x[collec].forEach(dd => {
-                for (kk in update) {
-                  dd[kk] = update[kk]
-                }
-                dd._time = Date.now()
-              })
-              jsdbFile('write')
+              //collec not exist
+              jsdb.x = {}
+              reject(false)
             }
-    
+      
           } else {
-            //collec not exist
+            //not add, not update, so this is invalid
             jsdb.x = {}
             reject(false)
           }
+      
+        })//jsdbFile
+      
+      
+      } else {
+        //inactive, this is fresh, the first fresh doc always being the write-new doc not write-update
     
+        if (collec && docq) {
+          //this is first fresh add
+          if (Array.isArray(docq)) {
+            docq.forEach(x => {
+              x._id   = randomWords()
+              x._time = Date.now()
+            } )
+            jsdb.x[collec] = docq
+          } else {
+            docq._id    = randomWords()
+            docq._time  = Date.now()
+            jsdb.x[collec] = [docq]
+          }
+          jsdbFile('write')
+  
         } else {
-          //not add, not update, so this is invalid
-          jsdb.x = {}
+          //invalid input
           reject(false)
         }
-    
-      })//jsdbFile
-    
-    
-    } else {
-      //inactive, this is fresh, the first fresh doc always being the write-new doc not write-update
-  
-      if (collec && docq) {
-        //this is first fresh add
-        if (Array.isArray(docq)) {
-          docq.forEach(x => x._time = Date.now())
-          jsdb.x[collec] = docq
-        } else {
-          docq._time = Date.now()
-          jsdb.x[collec] = [docq]
-        }
-        jsdbFile('write')
-
-      } else {
-        //invalid input
-        reject(false)
       }
-    }
+    })
+
+    
   
   })//promise
 }//END of jsdb.w
@@ -541,6 +553,7 @@ module.exports = {jsdb}
 20231130
 1) very first write, then read shows empty but if do second read, shows data
 2) the very first write, not added the _id
+3) after first 'require' then do 'jsdb.r' shows nothing, but second shows
 
 
 
