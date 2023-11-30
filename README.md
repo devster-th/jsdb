@@ -15,7 +15,8 @@ it needs the `xfile.js and xcrypto.js`, put these files into the `jsdb.js` you'r
     let result = await jsdb.r('people',{name:'john'})
 
     //write data
-    jsdb.w('people',{name:'jane', age:19, sex:'female'})
+    jsdb.w('people',{name:'jane', age:19, sex:'female'})  
+    //each adding doc will have the field _id & _time automatically
 
 
 # files
