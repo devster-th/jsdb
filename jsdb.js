@@ -566,7 +566,8 @@ module.exports = {jsdb}
 2) the very first write, not added the _id
 3) after first 'require' then do 'jsdb.r' shows nothing, but second shows
 
-
+20231201
+- all above solved
 
 
 

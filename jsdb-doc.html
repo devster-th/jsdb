@@ -1,0 +1,145 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="author" content="mutita.org@gmail.com">
+  <title>jsdb.js doc</title>
+  <style>
+    textarea {width: 100%; background-color:lavender; font-family: monospace; overflow:hidden; border:none; color:darkred}
+    code {background-color:lavender; font-family: monospace; color:darkred}
+    h1 {color:darkred}
+    h2 {margin-top:32px; margin-bottom:0}
+    h2 + p {margin-top:8px}
+    mark {background-color:lavender}
+    caution {color:red; font-weight: bold;}
+
+    @media (min-width:800px) {
+      #toc {
+        float: left;
+        width: 25%;
+        position:sticky; top:0;
+      }
+      #story {
+        margin-left: 25%;
+        max-width: 800px;
+      }
+      #title {
+        margin-top:0; padding-top:0;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- scroll top -->
+<a href="#" style="font-size:40px; position:fixed; left:0; bottom:0; padding:2px; color:orange; cursor:pointer; text-decoration: none;">&#8673;</a>
+<!-- table of contents -->
+<div id="toc">
+  <!-- doc title -->
+  <h1 id="title">jsdb doc</h1>
+  <p>Table of contents</p>
+  <ol>
+    <li><a href="#brief">Brief</a></li>
+    <li><a href="#config">Config</a></li>
+    <small style="color:gray">--- commands ---</small>
+    <li><a href="#read">read</a></li>
+    <li><a href="#write">write</a></li>
+    <li><a href="#delete">delete</a></li>
+    <li><a href="#change">changeMode</a></li>
+    <li><a href="#else">Something else</a></li>
+    
+
+  </ol>
+</div>
+<!-- story -->
+<div id="story">
+  <h2 id="brief">Brief</h2>
+  <p>Some times we need a very very simple data handling stuff. Not so thick or complex but just to keep the files. So the <code>jsdb</code> keeps our data in json format but if we do <code>secure mode</code> we can have that data all encrypted.</p>
+
+  <p>Following is the read command to get data from the 'people' collection whose the name is 'john'.</p>
+  <textarea>
+let result = await jsdb.r('people',{name:'john'})
+  </textarea>
+  <p>If we get the whole thing from database we do:</p>
+  <textarea>
+let result = await jsdb.r()    
+  </textarea>
+  
+
+  <h2 id="config">Config</h2>
+  <p>We have to have these files: <code>jsdb.js, xfile.js, xcrypto.js</code> and these modules installed in the node: <code>fs, crypto</code>. In the jsdb.js file needs to put these:</p>
+  <textarea rows="6">
+const XF = require('./xfile.js')
+const XC = require('./xcrypto.js')
+const jsdb = {
+  // ....other values
+  keyFile: =put your key file here=
+}
+  </textarea>
+  
+
+  <hr style="margin-top:36px; margin-bottom:0; padding:0; ">
+  <p style="color:gray; margin-top:0; font-family: sans-serif; text-align: center;">JSDB COMMANDS</p>
+
+  <h2 id="read">read</h2>
+  <p>Reads of finds data from the db we have 2 options: <code>jsdb.r()</code> or <code>jsdb.read()</code>. This tiny db allows only 1 field search only so that you cannot do <code>jsdb.r('people',{name:'j', age:19})</code>, just 1 field only.</p>
+  <textarea rows="12">
+let result = await jsdb.read() 
+//get whole data of the db
+
+let result = await jsdb.read('people') 
+//get whole data from 'people' collection
+
+let result = await jsdb.r('people',{name:'jane'}) 
+//finds people whose name is jane.
+  </textarea>
+
+  <h2 id="write">write</h2>
+  <p>Writes new data to db or can update the existing document. If writing data to a collection do this:</p>
+  <textarea rows="6">
+jsdb.w('people',{name:'jane', age:19})
+
+jsdb.write('people',[{name:'john'},{name:'jane'}, ...])
+  </textarea>
+  <p>But if you do updating you have to have 3 parameters: the collection name, the query, and the data to be updated. If you put <code>{}</code> in the query, the middle one, it is updating the whole collection.</p>
+  <textarea rows="6">
+jsdb.w(
+  'people',
+  {name:'john'}, // {} = all docs
+  {note:'he is good guy.'}
+)    
+  </textarea>
+  <p>The fields <code>_id, _time</code> always automatically added into each doc when we write into it.</p>
+
+
+
+  <h2 id="delete">delete</h2>
+  <p>Similar to above, if we didn't put query it deletes the whole collection.</p>
+  <textarea>
+jsdb.delete('people')
+jsdb.d('people',{name:'john'})
+  </textarea>
+  
+
+  <h2 id="change">changeMode</h2>
+  <p>The default mode of jsdb is <code>secure</code> if you like plain mode you run this command. If you're in plain/normal mode and running this command it changes to secure mode.</p>
+  <textarea>
+jsdb.changeMode()
+  </textarea>
+  <p>The secure mode saves data into file <code>jsdb.sec</code> which is base64 encryption. If we changed the file name will be <code>jsdb.json</code>, just a plain json file.</p>
+
+
+  <h2 id="else">Something else</h2>
+  <p>For administration you have to take care the file <code>jsdb.sec, jsdb.json</code>. We may set security on the file, save it, move it, whatever you can do to get job done.</p>
+  
+
+
+
+
+
+</div>
+
+<!-- footer -->
+<br><br><hr>
+<small>Last update: December 01, 2023 by M</small>
+</body>
+</html>
