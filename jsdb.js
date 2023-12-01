@@ -1,17 +1,21 @@
 
 ///////////////////////////////////////////////////////
 // JSDB - A very simple json database for node.js  
+// jsdb v1.1*
 
+//loads dependent modules
 const XF = require('/home/sunsern/xfile/xfile.js')
 const XC = require('/home/sunsern/xcrypto/xcrypto.js')
+
+// jsdb object
 const jsdb = {
   info: {
     module: 'jsdb',
     brief: 'A very simple json database for node.js',
-    version: '0.1',
+    version: '1.1',
     license: 'none',
     by: 'M',
-    date: '2023-07-30'
+    date: '2023-12-01'
   },
   defaultFileName: 'jsdb.json',
   secureFileName: 'jsdb.sec',
@@ -20,11 +24,6 @@ const jsdb = {
   active: false, //after check the file program will adjust this
   x: {} //this where the data kept
 }
-
-
-
-
-
 
 
 
@@ -231,14 +230,20 @@ jsdb.w = function (collec, docq, update) {
                 let querPatt = new RegExp(docq[qk1],'i')
                 //find & update
                 jsdb.x[collec].forEach(dd => {
-                  if (dd[qk1]) {
+                  if (dd[qk1]) { //this doc has this field or not
                     if (dd[qk1].match(querPatt) ) {
                       //found then just update it
+                      let doneQty = 0
                       for (kk in update) {
-                        dd[kk] = update[kk]
+                        if (kk == '_id') {
+                          //never change the _id
+                        } else {
+                          dd[kk] = update[kk]
+                          doneQty++
+                        }
                       }
+                      if (doneQty > 0) dd._time = Date.now()
                     }
-                    dd._time = Date.now()
                   }
                 })
                 jsdbFile('write')
@@ -246,10 +251,16 @@ jsdb.w = function (collec, docq, update) {
               } else {
                 //just a blank query {}, makes it as 'all'
                 jsdb.x[collec].forEach(dd => {
+                  let doneQty = 0
                   for (kk in update) {
-                    dd[kk] = update[kk]
+                    if (kk == '_id') {
+                      //don't change _id
+                    } else {
+                      dd[kk] = update[kk]
+                      doneQty++
+                    }
                   }
-                  dd._time = Date.now()
+                  if (doneQty > 0) dd._time = Date.now()
                 })
                 jsdbFile('write')
               }
